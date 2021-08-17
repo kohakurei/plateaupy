@@ -46,21 +46,33 @@ extendedAttribute={}\n\
 attr={}'\
 		.format(self.id, self.usage, self.measuredHeight, self.storeysAboveGround, self.storeysBelowGround, \
 			self.address, self.buildingDetails, self.extendedAttribute, self.attr)
-	# get vertices, triangles from lod0RoofEdge
-	def getLOD0polygons(self, height=None):
+	# get vertices, triangles from lod0RoofEdge or lod0FootPrint
+	def getLOD0polygons(self, height=None, convert=True):
 		vertices = None
 		triangles = None
-		if len(self.lod0RoofEdge) > 0:
-			vertices = []
-			for x in self.lod0RoofEdge[0]:
+
+		def __calc_vertices_triangles(polygon):
+			v = []
+			t = None
+			for x in polygon:
 				xx = copy.deepcopy(x)
 				if height is not None:
 					xx[2] = height
-				vertices.append( convertPolarToCartsian( *xx ) )
-			vertices = np.array(vertices)
-			res = earcut(np.array(vertices,dtype=np.int).flatten(), dim=3)
+				if convert:
+					v.append( convertPolarToCartsian( *xx ) )
+				else:
+					v.append( xx )
+			v = np.array(v)
+			res = earcut(np.array(v,dtype=np.int).flatten(), dim=3)
 			if len(res) > 0:
-				triangles = np.array(res).reshape((-1,3))
+				t = np.array(res).reshape((-1,3))
+			return v, t
+
+		if len(self.lod0RoofEdge) > 0:
+			vertices, triangles = __calc_vertices_triangles(self.lod0RoofEdge[0])
+		elif len(self.lod0FootPrint) > 0:
+			vertices, triangles = __calc_vertices_triangles(self.lod0FootPrint[0])
+
 		return vertices, triangles
 
 class appParameterizedTexture:
