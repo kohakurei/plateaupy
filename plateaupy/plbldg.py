@@ -28,6 +28,7 @@ class Building:
 		self.extendedAttribute = dict()
 
 		self.lod0RoofEdge = []
+		self.lod0FootPrint = []
 		self.lod1Solid = []
 
 		#self.lod2Solid = []
@@ -152,6 +153,9 @@ class plbldg(plobj):
 			# lod0RoofEdge
 			vals = bld.xpath('bldg:lod0RoofEdge/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
 			b.lod0RoofEdge = [str2floats(v).reshape((-1,3)) for v in vals]
+			# lod0FootPrint
+			vals = bld.xpath('bldg:lod0FootPrint/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
+			b.lod0FootPrint = [str2floats(v).reshape((-1,3)) for v in vals]
 			# lod1Solid
 			vals = bld.xpath('bldg:lod1Solid/gml:Solid/gml:exterior/gml:CompositeSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList', namespaces=nsmap)
 			b.lod1Solid = [str2floats(v).reshape((-1,3)) for v in vals]
